@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,8 +10,8 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #f5f5f3;
-      color: #1a1a1a;
+      background: #0e0e10;
+      color: #e8e8e8;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -19,24 +20,26 @@
     }
 
     .card {
-      background: #fff;
+      background: #18181b;
       border-radius: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      border: 1px solid #2a2a2e;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
       width: 100%;
-      max-width: 480px;
+      max-width: 33vw;
+      min-width: 320px;
       overflow: hidden;
     }
 
     .header {
       padding: 2rem 2rem 1.5rem;
-      border-bottom: 1px solid #f0f0ee;
+      border-bottom: 1px solid #2a2a2e;
       text-align: center;
     }
 
     .icon {
       width: 48px;
       height: 48px;
-      background: #eef2ff;
+      background: #1e2040;
       border-radius: 12px;
       display: inline-flex;
       align-items: center;
@@ -44,20 +47,20 @@
       margin-bottom: 1rem;
     }
 
-    .icon svg { width: 24px; height: 24px; stroke: #4f5fde; }
+    .icon svg { width: 24px; height: 24px; stroke: #7b8cde; fill: none; }
 
     h1 {
       font-size: 18px;
       font-weight: 600;
       margin-bottom: 4px;
-      color: #1a1a1a;
+      color: #f0f0f0;
     }
 
-    .subtitle { font-size: 14px; color: #888; }
+    .subtitle { font-size: 14px; color: #666; }
 
     .ip-section {
       padding: 1.75rem 2rem;
-      border-bottom: 1px solid #f0f0ee;
+      border-bottom: 1px solid #2a2a2e;
       text-align: center;
     }
 
@@ -66,7 +69,7 @@
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #aaa;
+      color: #555;
       margin-bottom: 8px;
     }
 
@@ -74,22 +77,29 @@
       font-size: 32px;
       font-weight: 600;
       font-family: 'SF Mono', 'Fira Code', monospace;
-      color: #1a1a1a;
+      color: #a5b4fc;
       letter-spacing: -0.5px;
       min-height: 40px;
+      word-break: break-all;
+      overflow-wrap: break-word;
     }
 
-    #ip-display.loading { color: #ccc; }
+    #ip-display.ipv6 {
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    #ip-display.loading { color: #333; }
 
     .meta-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1px;
-      background: #f0f0ee;
+      background: #2a2a2e;
     }
 
     .meta-cell {
-      background: #fff;
+      background: #18181b;
       padding: 1.25rem 1.5rem;
     }
 
@@ -98,14 +108,14 @@
       font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: #aaa;
+      color: #555;
       margin-bottom: 4px;
     }
 
     .meta-value {
       font-size: 14px;
       font-weight: 500;
-      color: #1a1a1a;
+      color: #d4d4d8;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -119,7 +129,7 @@
       gap: 1rem;
     }
 
-    .timestamp { font-size: 12px; color: #bbb; }
+    .timestamp { font-size: 12px; color: #444; }
 
     button {
       display: inline-flex;
@@ -127,8 +137,8 @@
       gap: 6px;
       font-size: 13px;
       font-weight: 500;
-      color: #4f5fde;
-      background: #eef2ff;
+      color: #a5b4fc;
+      background: #1e2040;
       border: none;
       border-radius: 8px;
       padding: 8px 14px;
@@ -136,21 +146,21 @@
       transition: background 0.15s;
     }
 
-    button:hover { background: #e3e8ff; }
+    button:hover { background: #252650; }
     button:active { transform: scale(0.98); }
-
-    button svg { width: 14px; height: 14px; stroke: #4f5fde; }
+    button svg { width: 14px; height: 14px; stroke: #a5b4fc; fill: none; }
 
     #error-msg {
       display: none;
       font-size: 13px;
-      color: #c0392b;
+      color: #f87171;
       text-align: center;
       padding: 0.75rem 2rem;
-      background: #fdf3f3;
+      background: #2a1515;
     }
 
-    @media (max-width: 400px) {
+    @media (max-width: 600px) {
+      .card { max-width: 100%; }
       #ip-display { font-size: 24px; }
       .meta-cell { padding: 1rem; }
       .footer { flex-direction: column; align-items: flex-start; }
@@ -158,12 +168,11 @@
   </style>
 </head>
 <body>
-
 <main>
   <div class="card" role="main">
     <div class="header">
       <div class="icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/>
           <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
         </svg>
@@ -201,7 +210,7 @@
     <div class="footer">
       <span class="timestamp" id="timestamp"></span>
       <button onclick="fetchIP()" aria-label="Refresh IP data">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="23 4 23 10 17 10"/>
           <polyline points="1 20 1 14 7 14"/>
           <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
@@ -224,24 +233,48 @@
     errEl.style.display = 'none';
     tsEl.textContent = '';
 
+    let ip, city, country, org;
+
+    // Attempt 1: freeipapi.com
     try {
-      const res = await fetch('https://ipapi.co/json/');
-      if (!res.ok) throw new Error('Request failed');
-      const d = await res.json();
+      const r = await fetch('https://freeipapi.com/api/json');
+      if (r.ok) {
+        const d = await r.json();
+        ip = d.ipAddress; city = d.cityName; country = d.countryName; org = d.isp || d.asn || '';
+      }
+    } catch(_) {}
 
-      ipEl.textContent = d.ip || 'Unavailable';
+    // Attempt 2: ipapi.co
+    if (!ip) {
+      try {
+        const r = await fetch('https://ipapi.co/json/');
+        if (r.ok) {
+          const d = await r.json();
+          ip = d.ip; city = d.city; country = d.country_name; org = d.org || '';
+        }
+      } catch(_) {}
+    }
+
+    // Attempt 3: ipify (IP only)
+    if (!ip) {
+      try {
+        const r = await fetch('https://api.ipify.org?format=json');
+        if (r.ok) { const d = await r.json(); ip = d.ip; }
+      } catch(_) {}
+    }
+
+    if (ip) {
+      ipEl.textContent = ip;
       ipEl.classList.remove('loading');
-
-      document.getElementById('city').textContent = d.city || '—';
-      document.getElementById('country').textContent = d.country_name || '—';
-      document.getElementById('isp').textContent = d.org ? d.org.replace(/^AS\d+\s*/, '') : '—';
-      document.getElementById('iptype').textContent = d.ip && d.ip.includes(':') ? 'IPv6' : 'IPv4';
-
+      document.getElementById('city').textContent = city || '—';
+      document.getElementById('country').textContent = country || '—';
+      document.getElementById('isp').textContent = org ? org.replace(/^AS\d+\s*/, '') : '—';
+      document.getElementById('iptype').textContent = ip.includes(':') ? 'IPv6' : 'IPv4';
+      if (ip.includes(':')) ipEl.classList.add('ipv6'); else ipEl.classList.remove('ipv6');
       const now = new Date();
       tsEl.textContent = 'Updated ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } catch (e) {
-      ipEl.textContent = 'Error';
-      ipEl.classList.add('loading');
+    } else {
+      ipEl.textContent = 'Unavailable';
       errEl.textContent = 'Could not fetch your IP. Check your connection and try again.';
       errEl.style.display = 'block';
     }
