@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What's my IP?</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f3;
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      width: 100%;
+      max-width: 480px;
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 2rem 2rem 1.5rem;
+      border-bottom: 1px solid #f0f0ee;
+      text-align: center;
+    }
+
+    .icon {
+      width: 48px;
+      height: 48px;
+      background: #eef2ff;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .icon svg { width: 24px; height: 24px; stroke: #4f5fde; }
+
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #1a1a1a;
+    }
+
+    .subtitle { font-size: 14px; color: #888; }
+
+    .ip-section {
+      padding: 1.75rem 2rem;
+      border-bottom: 1px solid #f0f0ee;
+      text-align: center;
+    }
+
+    .ip-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 8px;
+    }
+
+    #ip-display {
+      font-size: 32px;
+      font-weight: 600;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: #1a1a1a;
+      letter-spacing: -0.5px;
+      min-height: 40px;
+    }
+
+    #ip-display.loading { color: #ccc; }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: #f0f0ee;
+    }
+
+    .meta-cell {
+      background: #fff;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .meta-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 4px;
+    }
+
+    .meta-value {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a1a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .footer {
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .timestamp { font-size: 12px; color: #bbb; }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #4f5fde;
+      background: #eef2ff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    button:hover { background: #e3e8ff; }
+    button:active { transform: scale(0.98); }
+
+    button svg { width: 14px; height: 14px; stroke: #4f5fde; }
+
+    #error-msg {
+      display: none;
+      font-size: 13px;
+      color: #c0392b;
+      text-align: center;
+      padding: 0.75rem 2rem;
+      background: #fdf3f3;
+    }
+
+    @media (max-width: 400px) {
+      #ip-display { font-size: 24px; }
+      .meta-cell { padding: 1rem; }
+      .footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<main>
+  <div class="card" role="main">
+    <div class="header">
+      <div class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </div>
+      <h1>What's my IP?</h1>
+      <p class="subtitle">Your public IP address and network info</p>
+    </div>
+
+    <div class="ip-section">
+      <div class="ip-label">IP address</div>
+      <div id="ip-display" class="loading" aria-live="polite">Loading…</div>
+    </div>
+
+    <div class="meta-grid">
+      <div class="meta-cell">
+        <div class="meta-label">City</div>
+        <div class="meta-value" id="city">—</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-label">Country</div>
+        <div class="meta-value" id="country">—</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-label">ISP</div>
+        <div class="meta-value" id="isp">—</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-label">IP version</div>
+        <div class="meta-value" id="iptype">—</div>
+      </div>
+    </div>
+
+    <div id="error-msg" role="alert"></div>
+
+    <div class="footer">
+      <span class="timestamp" id="timestamp"></span>
+      <button onclick="fetchIP()" aria-label="Refresh IP data">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"/>
+          <polyline points="1 20 1 14 7 14"/>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+</main>
+
+<script>
+  async function fetchIP() {
+    const ipEl = document.getElementById('ip-display');
+    const errEl = document.getElementById('error-msg');
+    const tsEl = document.getElementById('timestamp');
+
+    ipEl.textContent = 'Loading…';
+    ipEl.classList.add('loading');
+    ['city','country','isp','iptype'].forEach(id => document.getElementById(id).textContent = '—');
+    errEl.style.display = 'none';
+    tsEl.textContent = '';
+
+    try {
+      const res = await fetch('https://ipapi.co/json/');
+      if (!res.ok) throw new Error('Request failed');
+      const d = await res.json();
+
+      ipEl.textContent = d.ip || 'Unavailable';
+      ipEl.classList.remove('loading');
+
+      document.getElementById('city').textContent = d.city || '—';
+      document.getElementById('country').textContent = d.country_name || '—';
+      document.getElementById('isp').textContent = d.org ? d.org.replace(/^AS\d+\s*/, '') : '—';
+      document.getElementById('iptype').textContent = d.ip && d.ip.includes(':') ? 'IPv6' : 'IPv4';
+
+      const now = new Date();
+      tsEl.textContent = 'Updated ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch (e) {
+      ipEl.textContent = 'Error';
+      ipEl.classList.add('loading');
+      errEl.textContent = 'Could not fetch your IP. Check your connection and try again.';
+      errEl.style.display = 'block';
+    }
+  }
+
+  fetchIP();
+</script>
+</body>
+</html>
